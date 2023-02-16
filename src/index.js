@@ -13,7 +13,7 @@ function onFetchInfo(e) {
     .then(hits => {
       onCreateMarkup(hits);
     })
-    .catch(error => Notify.failure(`${error}`));
+    .catch(error => Notify.failure(error.message));
   searchQuery.value = '';
 }
 
