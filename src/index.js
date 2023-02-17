@@ -2,6 +2,7 @@ import { Notify } from 'notiflix';
 import FetchAplication from './fetchInfo';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import 'animate.css';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
@@ -69,8 +70,8 @@ function onCreateMarkup(arr) {
         comments,
         downloads,
       }) =>
-        `<div class="photo-card">
-          <a href='${largeImageURL}'><img src="${webformatURL}" alt="${tags}" loading="lazy"/></a>
+        `<div class="photo-card animate__animated animate__bounceIn">
+          <a href='${largeImageURL}'><div class="image"><img src="${webformatURL}" alt="${tags}" loading="lazy"/></div></a>
           <div class="info">
             <p class="info-item">
               <b class='info-b'>Likes</b>
