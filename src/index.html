@@ -8,23 +8,26 @@
     <title>Document</title>
   </head>
   <body>
-    <div class="search-box">
-      <form class="search-form">
-        <input
-          type="text"
-          name="searchQuery"
-          autocomplete="off"
-          placeholder="Чё надо?!"
-          class="search-input"
-        />
-        <button type="submit">
-          <span class="box">
-            <p>Поиск</p>
-          </span>
-        </button>
-      </form>
-    </div>
-    <div class="gallery"></div>
+    <section class="section">
+      <div class="search-box">
+        <form class="search-form">
+          <input
+            type="text"
+            name="searchQuery"
+            autocomplete="off"
+            placeholder="Чё надо?!"
+            class="search-input"
+          />
+          <button type="submit">
+            <span class="box">
+              <p>Поиск</p>
+            </span>
+          </button>
+        </form>
+      </div>
+      <div class="gallery"></div>
+      <button type="button" class="loadmore is-hidden">Погнали дальше</button>
+    </section>
     <script src="./index.js" type="module"></script>
   </body>
 </html>

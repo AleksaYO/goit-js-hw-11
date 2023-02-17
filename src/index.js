@@ -1,24 +1,63 @@
 import { Notify } from 'notiflix';
-import onGetFetch from './fetchInfo';
+import FetchAplication from './fetchInfo';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const box = document.querySelector('.gallery');
+const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
+const loadmore = document.querySelector('.loadmore');
 
-form.addEventListener('submit', onFetchInfo);
+form.addEventListener('submit', getQuery);
+loadmore.addEventListener('click', onLoadMore);
 
-function onFetchInfo(e) {
+const request = new FetchAplication();
+
+const lightbox = new SimpleLightbox('.gallery a');
+
+async function getQuery(e) {
+  loadmore.classList.remove('is-hidden');
+  loadmore.textContent = 'Грузим!';
+
+  onGalleryReset();
+
   e.preventDefault();
+
   const { searchQuery } = e.currentTarget.elements;
-  onGetFetch(searchQuery.value)
-    .then(hits => {
-      onCreateMarkup(hits);
-    })
-    .catch(error => Notify.failure(error.message));
-  searchQuery.value = '';
+
+  request.query = searchQuery.value.trim();
+
+  onFetchInfo();
+
+  form.reset();
+}
+
+async function onFetchInfo() {
+  loadmore.disabled = true;
+  loadmore.textContent = 'Грузим!';
+
+  const { hits, totalHits } = await request.getInfo();
+
+  try {
+    if (!totalHits) {
+      throw new Error('Ничего не найдено, подумай ка лучше');
+    } else if (request.page === 1) {
+      Notify.success(`Найдено ${totalHits} фоточек`);
+    }
+    onCreateMarkup(hits);
+
+    if (request.page >= 2) onSlowlyScroll();
+
+    request.nextPage();
+  } catch (error) {
+    loadmore.classList.add('is-hidden');
+
+    Notify.failure(error.message);
+
+    gallery.innerHTML = `<p class="text-wor">Ало, такого не существует &#129320;</p>`;
+  }
 }
 
 function onCreateMarkup(arr) {
-  box.innerHTML = '';
   const markup = arr
     .map(
       ({
@@ -31,7 +70,7 @@ function onCreateMarkup(arr) {
         downloads,
       }) =>
         `<div class="photo-card">
-          <img src="${webformatURL}" alt="#" loading="lazy"/>
+          <a href='${largeImageURL}'><img src="${webformatURL}" alt="${tags}" loading="lazy"/></a>
           <div class="info">
             <p class="info-item">
               <b class='info-b'>Likes</b>
@@ -53,5 +92,30 @@ function onCreateMarkup(arr) {
         </div>`
     )
     .join('');
-  box.insertAdjacentHTML('beforeend', markup);
+
+  gallery.insertAdjacentHTML('beforeend', markup);
+
+  lightbox.refresh();
+  loadmore.disabled = false;
+  loadmore.textContent = 'Погнали дальше';
+}
+
+function onLoadMore() {
+  onFetchInfo();
+}
+
+function onGalleryReset() {
+  request.firstPage();
+  gallery.innerHTML = '';
+}
+
+function onSlowlyScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
