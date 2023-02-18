@@ -7,10 +7,27 @@ import 'animate.css';
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
 const loadmore = document.querySelector('.loadmore');
+const arrow = document.querySelector('.icon-arrow');
 
 form.addEventListener('submit', getQuery);
 loadmore.addEventListener('click', onLoadMore);
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 700) {
+    arrow.classList.remove('is-hidden');
+  } else if (window.scrollY < 700) {
+    arrow.classList.add('is-hidden');
+  }
+});
 
+arrow.addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth',
+  });
+});
+
+arrow.classList.add('is-hidden');
 const request = new FetchAplication();
 
 const lightbox = new SimpleLightbox('.gallery a');
@@ -18,6 +35,7 @@ const lightbox = new SimpleLightbox('.gallery a');
 async function getQuery(e) {
   loadmore.classList.remove('is-hidden');
   loadmore.textContent = 'Грузим!';
+  arrow.classList.add('is-hidden');
 
   onGalleryReset();
 
@@ -41,9 +59,10 @@ async function onFetchInfo() {
   try {
     if (!totalHits) {
       throw new Error('Ничего не найдено, подумай ка лучше');
-    } else if (request.page === 1) {
+    } else {
       Notify.success(`Найдено ${totalHits} фоточек`);
     }
+
     onCreateMarkup(hits);
 
     if (request.page >= 2) onSlowlyScroll();
@@ -71,7 +90,7 @@ function onCreateMarkup(arr) {
         downloads,
       }) =>
         `<div class="photo-card animate__animated animate__bounceIn">
-          <a href='${largeImageURL}'><div class="image"><img src="${webformatURL}" alt="${tags}" loading="lazy"/></div></a>
+          <div class="image"><a href='${largeImageURL}'><img src="${webformatURL}" alt="${tags}" loading="lazy"/></a></div>
           <div class="info">
             <p class="info-item">
               <b class='info-b'>Likes</b>
@@ -120,3 +139,19 @@ function onSlowlyScroll() {
     behavior: 'smooth',
   });
 }
+
+// function onClickScrollUp() {
+//   arrow.onclick = () => {
+//     window.scrollTo({
+//       top: 0,
+//       left: 0,
+//       behavior: 'smooth',
+//     });
+//   };
+// }
+
+// const total = totalHits / request.perPage;
+// request.perItem = Math.ceil(total);
+// if (request.page === request.perItem) {
+//   Notify.warning('asdawda');
+// }
