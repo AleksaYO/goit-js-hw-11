@@ -187,6 +187,7 @@ button {
 }
 
 .photo-card {
+  height: 480px;
   overflow: hidden;
   position: relative;
   width: calc((100% - 150px) / 4);
