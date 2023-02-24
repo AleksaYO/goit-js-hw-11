@@ -59,8 +59,15 @@ async function onFetchInfo() {
   try {
     if (!totalHits) {
       throw new Error('Ничего не найдено, подумай ка лучше');
-    } else {
+    } else if (request.page === 1) {
       Notify.success(`Найдено ${totalHits} фоточек`);
+    }
+
+    const total = totalHits / request.perPage;
+    request.perItem = Math.ceil(total);
+    if (request.page === request.perItem) {
+      Notify.info('Ну вот и все &#129335');
+      loadmore.classList.add('is-hidden');
     }
 
     onCreateMarkup(hits);
@@ -148,10 +155,4 @@ function onSlowlyScroll() {
 //       behavior: 'smooth',
 //     });
 //   };
-// }
-
-// const total = totalHits / request.perPage;
-// request.perItem = Math.ceil(total);
-// if (request.page === request.perItem) {
-//   Notify.warning('asdawda');
 // }
